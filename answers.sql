@@ -38,3 +38,17 @@ SELECT email, SUM(num_cupcakes) AS total
         ON customers.id = orders.customer_id
         GROUP BY customers.email
         ORDER BY total DESC;
+
+
+-- Problem 6 --
+
+SELECT fname, lname, email
+    FROM customers
+        LEFT JOIN orders
+        ON customers.id = orders.customer_id
+        LEFT JOIN cupcakes
+        ON orders.cupcake_id = cupcakes.id
+        WHERE cupcake_id = 5 AND orders.processed = TRUE
+        LIMIT 1;
+
+

@@ -18,22 +18,67 @@ export const query4 = await Animal.findAll({
 });
 
 // Get all the humans with first names that start with "J"
-export const query5 = null;
+export const query5 = await Human.findAll({ 
+    where: {
+        fname: { [Op.startsWith]: 'J' }
+    }
+});
 
 // Get all the animals who don't have a birth year
-export const query6 = null;
+export const query6 = await Animal.findAll({
+    where: {
+        birthYear: { [Op.is]: null }
+    }
+});
 
 // Get all the animals with species "fish" OR "rabbit"
-export const query7 = null;
+export const query7 = await Animal.findAll({
+    where: {
+        [Op.or]: [{species: 'fish'}, {species: 'rabbit'}]
+    }
+});
 
 // Get all the humans who DON'T have an email address that contains "gmail"
-export const query8 = null;
+export const query8 = await Human.findAll({
+    where: {
+        email: {[Op.notLike]: '%gmail.com'}
+    }
+});
 
 // Continue reading the instructions before you move on!
 
 // Print a directory of humans and their animals
-export async function printHumansAndAnimals() {}
+export async function printHumansAndAnimals() {
+    let newArray = [];
+    const humanList = await Human.findAll();
+
+    for(const human of humanList) {
+        newArray.push(human.getFullName())
+        const animalList = await human.getAnimals();
+
+        for(const animal of animalList){
+            newArray.push(`- ${animal.name}, ${animal.species}`)
+        }
+   }
+   console.log(newArray);
+
+}
 
 // Return a Set containing the full names of all humans
 // with animals of the given species.
-export async function getHumansByAnimalSpecies(species) {}
+export async function getHumansByAnimalSpecies(species) {
+    const humans = new Set();
+
+    const animals = await Animal.findAll({
+        where: {species: species}
+    });
+
+    for(const animal of animals){
+        //console.log('animal', animal)
+        const human = await Human.findByPk(animal.humanId)
+        //console.log('human', human)
+        humans.add(human.getFullName())
+    }
+    return humans;
+
+}
